@@ -94,7 +94,7 @@ const SKILLS = [
     ap: 1,
     description: "Un coup rapide en diagonale avec la Keyblade",
     notes: "Obtention : Niv 12 (Épée) ; Niv 69 (Sceptre) ; Niv 6 (Bouclier)",
-    gif: null
+    gif: "kh1_frappe_eclair.gif"
   },
   {
     id: "kh1_rapprocheur",
@@ -683,7 +683,7 @@ const SKILLS = [
     ap: 3,
     description: "Sora charge l'ennemi rapidement. Sélectionnez l'option Combo pour lancer une série d'attaques (2 MP)",
     notes: "Obtention : Parlez à Cloud après votre victoire contre Cerbère au Colisée de l'Olympe",
-    gif: null
+    gif: "kh1_aquilon.gif"
   },
   {
     id: "kh1_arcanes",
