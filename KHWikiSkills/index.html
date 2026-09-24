@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KH Wiki Skills — Compétences Kingdom Hearts</title>
+  <meta name="description" content="Outil de suivi des compétences des jeux Kingdom Hearts. Débloquez et consultez les compétences que vous possédez en jeu.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗝️</text></svg>">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ── En-tête ───────────────────────────────────────────── -->
+  <header>
+    <h1 class="kh-logo-text">Kingdom Hearts</h1>
+    <p class="kh-logo-sub">Wiki des Compétences</p>
+    <div class="diamond-divider">
+      <div class="diamond small"></div>
+      <div class="diamond"></div>
+      <div class="diamond small"></div>
+      <div class="diamond"></div>
+      <div class="diamond small"></div>
+    </div>
+  </header>
+
+  <!-- ── Section débloquage ─────────────────────────────────── -->
+  <section class="unlock-section" aria-label="Débloquer une compétence">
+    <h2>Révéler une compétence</h2>
+
+    <div class="unlock-form">
+
+      <!-- Sélection du jeu -->
+      <div class="form-group">
+        <label for="gameSelect">Jeu</label>
+        <select id="gameSelect" class="kh-select" aria-label="Sélectionner un jeu">
+          <option value="">— Tous les jeux —</option>
+          <option value="kh1">Kingdom Hearts</option>
+          <option value="com">Chain of Memories</option>
+          <option value="kh2">Kingdom Hearts II</option>
+          <option value="bbs">Birth by Sleep</option>
+          <option value="days">358/2 Days</option>
+          <option value="kh3d">Dream Drop Distance</option>
+          <option value="kh3">Kingdom Hearts III</option>
+        </select>
+      </div>
+
+      <!-- Saisie du nom de la compétence -->
+      <div class="form-group" style="position:relative;">
+        <label for="skillInput">Nom de la compétence</label>
+        <div class="input-with-suggestions" style="position:relative;">
+          <input
+            type="text"
+            id="skillInput"
+            class="kh-input"
+            placeholder="Ex : Parade, Roulade, Analyse…"
+            autocomplete="off"
+            spellcheck="false"
+            aria-label="Nom de la compétence"
+            aria-autocomplete="list"
+            aria-controls="suggestions"
+          >
+          <!-- Liste de suggestions -->
+          <ul id="suggestions" class="suggestions-list hidden" role="listbox" aria-label="Suggestions de compétences"></ul>
+        </div>
+      </div>
+
+      <!-- Bouton débloquer -->
+      <button id="unlockBtn" class="kh-btn" type="button" aria-label="Révéler la compétence">
+        <span>✦</span> Révéler
+      </button>
+
+    </div>
+
+    <!-- Feedback texte -->
+    <div id="unlockFeedback" class="unlock-feedback" role="alert" aria-live="polite"></div>
+
+    <p style="margin-top:12px; font-size:0.72rem; color:var(--kh-white-dim);">
+      💡 Raccourci : <kbd style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); border-radius:3px; padding:1px 5px; font-size:0.7rem;">Ctrl+K</kbd> pour revenir au champ de saisie · Touches <kbd style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); border-radius:3px; padding:1px 5px; font-size:0.7rem;">↑ ↓</kbd> pour naviguer dans les suggestions
+    </p>
+  </section>
+
+  <!-- ── Section liste des compétences ─────────────────────── -->
+  <section aria-label="Compétences débloquées">
+
+    <!-- En-tête + contrôles -->
+    <div class="skills-header">
+      <h2 class="skills-title">Mes Compétences</h2>
+      <span id="skillsCount" class="skills-count">0 débloquée</span>
+    </div>
+
+    <!-- Barre de filtres -->
+    <div class="controls-bar">
+      <!-- Filtre par type -->
+      <select id="typeFilter" class="kh-select filter-type-select" aria-label="Filtrer par type">
+        <option value="all">Tous les types</option>
+        <option value="combat">⚔️ Combat</option>
+        <option value="support">🛡️ Support</option>
+        <option value="special">✨ Spécial</option>
+        <option value="growth">📈 Croissance</option>
+        <option value="summon">🌟 Invocation</option>
+        <option value="magic">🔮 Magie</option>
+        <option value="shared">🤝 Partagée</option>
+        <option value="drive">🔥 Drive</option>
+        <option value="reaction">⚡ Réaction</option>
+        <option value="command">📜 Commande</option>
+        <option value="link">🔗 Lien</option>
+        <option value="formchange">🔄 Changement de forme</option>
+      </select>
+
+      <!-- Recherche dans la liste -->
+      <input
+        type="search"
+        id="searchSkills"
+        class="kh-input search-skills-input"
+        placeholder="🔍 Rechercher dans mes compétences…"
+        aria-label="Rechercher dans les compétences débloquées"
+      >
+
+      <!-- Réinitialiser -->
+      <button id="resetBtn" class="kh-btn kh-btn-secondary" type="button" title="Réinitialiser toutes les compétences">
+        ↺ Reset
+      </button>
+    </div>
+
+    <!-- Conteneur des groupes de compétences -->
+    <div id="skillsContainer" class="skills-container" role="list" aria-label="Liste des compétences débloquées">
+      <!-- Rempli dynamiquement par app.js -->
+    </div>
+
+  </section>
+
+  <!-- ── Guide d'utilisation ──────────────────────────────── -->
+  <section style="margin-top:40px;">
+    <div class="diamond-divider">
+      <div class="diamond small"></div>
+      <div class="diamond"></div>
+      <div class="diamond small"></div>
+    </div>
+
+    <div class="unlock-section" style="margin-top:16px;">
+      <h2>Comment utiliser cet outil</h2>
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; margin-top:12px;">
+
+        <div style="padding:14px; background:rgba(77,159,255,0.05); border:1px solid rgba(77,159,255,0.1); border-radius:var(--border-radius);">
+          <div style="font-size:1.5rem; margin-bottom:8px;">1️⃣</div>
+          <strong style="color:var(--kh-blue-light);">Sélectionnez le jeu</strong>
+          <p style="font-size:0.8rem; color:var(--kh-white-dim); margin-top:4px; line-height:1.5;">
+            Choisissez le jeu Kingdom Hearts dans lequel vous avez la compétence. Laissez "Tous les jeux" si vous n'êtes pas sûr.
+          </p>
+        </div>
+
+        <div style="padding:14px; background:rgba(77,159,255,0.05); border:1px solid rgba(77,159,255,0.1); border-radius:var(--border-radius);">
+          <div style="font-size:1.5rem; margin-bottom:8px;">2️⃣</div>
+          <strong style="color:var(--kh-blue-light);">Tapez le nom</strong>
+          <p style="font-size:0.8rem; color:var(--kh-white-dim); margin-top:4px; line-height:1.5;">
+            Entrez le nom de la compétence (en français ou en anglais). Les suggestions vous aideront à trouver la bonne orthographe.
+          </p>
+        </div>
+
+        <div style="padding:14px; background:rgba(77,159,255,0.05); border:1px solid rgba(77,159,255,0.1); border-radius:var(--border-radius);">
+          <div style="font-size:1.5rem; margin-bottom:8px;">3️⃣</div>
+          <strong style="color:var(--kh-blue-light);">Révélez !</strong>
+          <p style="font-size:0.8rem; color:var(--kh-white-dim); margin-top:4px; line-height:1.5;">
+            Cliquez sur <strong>Révéler</strong> ou appuyez sur Entrée. La compétence apparaît dans votre liste, organisée par jeu.
+          </p>
+        </div>
+
+        <div style="padding:14px; background:rgba(77,159,255,0.05); border:1px solid rgba(77,159,255,0.1); border-radius:var(--border-radius);">
+          <div style="font-size:1.5rem; margin-bottom:8px;">💾</div>
+          <strong style="color:var(--kh-blue-light);">Sauvegarde auto</strong>
+          <p style="font-size:0.8rem; color:var(--kh-white-dim); margin-top:4px; line-height:1.5;">
+            Vos compétences débloquées sont sauvegardées dans le cache de votre navigateur (localStorage). Elles persistent entre les sessions.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+</div><!-- #app -->
+
+<!-- ── Toast container ──────────────────────────────────────── -->
+<div id="toastContainer" class="toast-container" aria-live="assertive" aria-atomic="true"></div>
+
+<!-- ── Scripts ───────────────────────────────────────────────── -->
+<!-- data.js doit être chargé AVANT app.js -->
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>
