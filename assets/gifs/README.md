@@ -5,12 +5,14 @@ Place ici les GIFs illustrant les compétences.
 ## Convention de nommage
 
 ```
-{game}_{id_competence}.gif
+{skill_id}.gif
 ```
 
+Le nom du fichier GIF correspond directement à l'ID de la compétence (l'ID contenant déjà l'identifiant du jeu, ex: `kh1_rapprocheur`).
+
 **Exemples :**
-- `kh1_dodge_roll.gif`
-- `kh1_ars_arcanum.gif`
+- `kh1_rapprocheur.gif`
+- `kh1_arcanes.gif`
 - `kh2_quick_run.gif`
 - `bbs_spellweaver.gif`
 
@@ -23,7 +25,7 @@ Après avoir ajouté le fichier ici, ouvre `js/data.js` et modifie le champ `gif
 gif: null
 
 // Après :
-gif: "kh1_dodge_roll.gif"
+gif: "kh1_rapprocheur.gif"
 ```
 
 ## Format recommandé

@@ -545,7 +545,7 @@ header {
 /* ── Ligne de compétence ────────────────────────────────────── */
 .skill-row {
   display: grid;
-  grid-template-columns: 1fr 2fr auto 80px;
+  grid-template-columns: 1.2fr 2fr 180px 30%;
   gap: 0;
   border-bottom: 1px solid rgba(77, 159, 255, 0.08);
   min-height: 80px;
@@ -647,26 +647,34 @@ header {
 
 /* Colonne Image/GIF */
 .skill-col-media {
-  padding: 8px;
+  padding: 10px 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 90px;
-  flex-shrink: 0;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .skill-media-img {
-  width: 74px;
-  height: 60px;
+  width: 100%;
+  height: auto;
+  max-height: 240px;
   object-fit: cover;
-  border-radius: 4px;
-  border: 1px solid rgba(77, 159, 255, 0.2);
+  border-radius: 6px;
+  border: 1px solid rgba(77, 159, 255, 0.25);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  transition: transform var(--transition);
+}
+
+.skill-media-img:hover {
+  transform: scale(1.02);
 }
 
 .skill-media-placeholder {
-  width: 74px;
+  width: 100%;
+  max-width: 160px;
   height: 60px;
-  border-radius: 4px;
+  border-radius: 6px;
   border: 1px dashed rgba(77, 159, 255, 0.2);
   display: flex;
   align-items: center;
@@ -674,7 +682,7 @@ header {
   flex-direction: column;
   gap: 2px;
   color: rgba(77, 159, 255, 0.3);
-  font-size: 0.6rem;
+  font-size: 0.65rem;
   text-align: center;
   cursor: pointer;
   transition: all var(--transition);

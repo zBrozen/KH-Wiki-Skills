@@ -41,7 +41,7 @@ Un outil web local pour suivre et consulter les **compétences des jeux Kingdom 
 
 | ID    | Jeu                          | Compétences en BDD |
 |-------|------------------------------|---------------------|
-| `kh1` | Kingdom Hearts               | 0 (début de la bdd) |
+| `kh1` | Kingdom Hearts               | 65 (complète) |
 
 
 > La base de données est une base de départ. Complète-la au fur et à mesure !
