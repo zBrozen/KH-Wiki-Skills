@@ -83,7 +83,7 @@ const SKILLS = [
     ap: 2,
     description: "Appuyez sur Croix juste après une Parade pour contre-attaquer (restaure vos MP si réussite)",
     notes: "Obtention : Niv 15 (Épée) ; Niv 57 (Sceptre) ; Niv 45 (Bouclier)",
-    gif: null
+    gif: "kh1_contre.gif"
   },
   {
     id: "kh1_frappe_eclair",
@@ -138,7 +138,7 @@ const SKILLS = [
     ap: 3,
     description: "Le coup final d'un enchaînement gagne en puissance mais perd en portée",
     notes: "Obtention : Niv 33 (Épée) ; Niv 78 (Sceptre) ; Niv 60 (Bouclier)",
-    gif: null
+    gif: "kh1_coup_de_grace.gif"
   },
   {
     id: "kh1_frappe_ouragan",
@@ -171,7 +171,7 @@ const SKILLS = [
     ap: 2,
     description: "Sora frappe le sol avec sa Keyblade, créant une petite sphère explosive autour de lui assommant les ennemis touchés",
     notes: "Obtention : Niv 51 (Épée) ; Niv 6 (Sceptre) ; Niv 18 (Bouclier)",
-    gif: null
+    gif: "kh1_dome_impact.gif"
   },
   {
     id: "kh1_break_gravite",
@@ -694,7 +694,7 @@ const SKILLS = [
     ap: 4,
     description: "Un puissant enchaînement de coups frontaux (3 MP)",
     notes: "Obtention : Vaincre le Capitaine Crochet au Pays Imaginaire",
-    gif: null
+    gif: "kh1_arcanes.gif"
   },
   {
     id: "kh1_diskobolos",
@@ -705,7 +705,7 @@ const SKILLS = [
     ap: 3,
     description: "Sora lance sa Keyblade en avant, blessant tous les ennemis sur la trajectoire. Il est possible d'enchaîner plusieurs coups en appuyant sur la commande Combo lorsque Sora récupère son arme (2 MP)",
     notes: "Obtention : Remporter la Coupe Pégase au Colisée de l'Olympe",
-    gif: null
+    gif: "kh1_diskobolos.gif"
   },
   {
     id: "kh1_ragnarok",
