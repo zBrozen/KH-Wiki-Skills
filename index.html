@@ -95,6 +95,18 @@
 
     <!-- Barre de filtres -->
     <div class="controls-bar">
+      <!-- Filtre par jeu pour la liste -->
+      <select id="listGameFilter" class="kh-select" aria-label="Filtrer par jeu">
+        <option value="all">Tous les jeux</option>
+        <option value="kh1">Kingdom Hearts</option>
+        <option value="com">Chain of Memories</option>
+        <option value="kh2">Kingdom Hearts II</option>
+        <option value="bbs">Birth by Sleep</option>
+        <option value="days">358/2 Days</option>
+        <option value="kh3d">Dream Drop Distance</option>
+        <option value="kh3">Kingdom Hearts III</option>
+      </select>
+
       <!-- Filtre par type -->
       <select id="typeFilter" class="kh-select filter-type-select" aria-label="Filtrer par type">
         <option value="all">Tous les types</option>
@@ -120,6 +132,12 @@
         placeholder="🔍 Rechercher dans mes compétences…"
         aria-label="Rechercher dans les compétences débloquées"
       >
+
+      <!-- Spoil Toggle -->
+      <label style="display: flex; align-items: center; gap: 6px; font-size: 0.85rem; color: #ff6b6b; cursor: pointer; user-select: none;">
+        <input type="checkbox" id="spoilToggle" style="accent-color: #ff6b6b;">
+        👀 Spoils (Non obtenues)
+      </label>
 
       <!-- Réinitialiser -->
       <button id="resetBtn" class="kh-btn kh-btn-secondary" type="button" title="Réinitialiser toutes les compétences">
@@ -174,7 +192,15 @@
           <div style="font-size:1.5rem; margin-bottom:8px;">💾</div>
           <strong style="color:var(--kh-blue-light);">Sauvegarde auto</strong>
           <p style="font-size:0.8rem; color:var(--kh-white-dim); margin-top:4px; line-height:1.5;">
-            Vos compétences débloquées sont sauvegardées dans le cache de votre navigateur (localStorage). Elles persistent entre les sessions.
+            Vos compétences débloquées sont sauvegardées dans le cache. Elles persistent entre les sessions.
+          </p>
+        </div>
+
+        <div style="padding:14px; background:rgba(77,159,255,0.05); border:1px solid rgba(77,159,255,0.1); border-radius:var(--border-radius);">
+          <div style="font-size:1.5rem; margin-bottom:8px;">🎬</div>
+          <strong style="color:var(--kh-blue-light);">Lire les GIFs</strong>
+          <p style="font-size:0.8rem; color:var(--kh-white-dim); margin-top:4px; line-height:1.5;">
+            Survolez un GIF pour le lire. Cliquez dessus pour verrouiller la lecture (et recliquez pour le remettre en pause).
           </p>
         </div>
 

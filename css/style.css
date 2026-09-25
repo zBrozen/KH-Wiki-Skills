@@ -655,6 +655,34 @@ header {
   box-sizing: border-box;
 }
 
+.gif-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.gif-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 500;
+  opacity: 1;
+  transition: opacity 0.2s ease;
+  pointer-events: none; /* Laisse passer les clics vers l'image en dessous */
+}
+
+.gif-wrapper.playing .gif-overlay {
+  opacity: 0;
+}
+
 .skill-media-img {
   width: 100%;
   height: auto;
@@ -664,6 +692,7 @@ header {
   border: 1px solid rgba(77, 159, 255, 0.25);
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
   transition: transform var(--transition);
+  display: block;
 }
 
 .skill-media-img:hover {
@@ -900,4 +929,35 @@ mark {
   color: var(--kh-white-dim);
   padding: 12px;
   letter-spacing: 0.05em;
+}
+
+/* ── Spoiler mode ────────────────────────────────────────────── */
+.skill-row.spoiled {
+  background: repeating-linear-gradient(-45deg, rgba(255,107,107,0.03), rgba(255,107,107,0.03) 10px, transparent 10px, transparent 20px);
+  border-color: rgba(255, 107, 107, 0.15);
+  opacity: 0.8;
+}
+.skill-row.spoiled:hover {
+  opacity: 1;
+  background: rgba(255,107,107,0.08);
+}
+.spoil-checkbox {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  margin-top: 3px;
+  position: relative;
+  transition: all 0.2s;
+}
+.spoil-checkbox:hover {
+  border-color: var(--kh-blue-glow);
+  background: rgba(77, 159, 255, 0.1);
+}
+.spoil-checkbox:checked {
+  background: var(--kh-gold);
+  border-color: var(--kh-gold);
 }

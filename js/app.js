@@ -17,6 +17,12 @@ const App = {
   /** @type {string} Recherche active dans la liste */
   searchQuery: "",
 
+  /** @type {string} Filtre actif par jeu dans la liste */
+  listGameFilter: "all",
+
+  /** @type {boolean} Affichage des spoils */
+  showSpoils: false,
+
   /** @type {Object<string, boolean>} État ouvert/fermé des groupes de jeux */
   openGroups: {},
 };
@@ -121,7 +127,15 @@ function renderSkillRow(skill, isNew = false) {
   const typeColor = getTypeColor(skill.type);
 
   const mediaHTML = skill.gif
-    ? `<img class="skill-media-img" src="assets/gifs/${skill.gif}" alt="${skill.name}" loading="lazy">`
+    ? `<div class="gif-wrapper">
+         <img class="skill-media-img" src="assets/gifs/${skill.gif}" alt="${skill.name}" loading="lazy">
+         <div class="gif-overlay">
+           <svg viewBox="0 0 24 24" width="24" height="24" fill="white" style="opacity: 0.8; margin-bottom: 4px;">
+             <path d="M8 5v14l11-7z"/>
+           </svg>
+           <span>Lire le GIF</span>
+         </div>
+       </div>`
     : `<div class="skill-media-placeholder" title="GIF à ajouter">
          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
            <rect x="3" y="3" width="18" height="18" rx="2"/>
@@ -139,12 +153,20 @@ function renderSkillRow(skill, isNew = false) {
     ? `<span class="skill-notes">ℹ ${skill.notes}</span>`
     : "";
 
+  const isSpoiled = App.showSpoils && !App.unlockedSkills.has(skill.id);
+  const rowClasses = ["skill-row"];
+  if (isNew) rowClasses.push("newly-revealed");
+  if (isSpoiled) rowClasses.push("spoiled");
+
   return `
-    <div class="skill-row${isNew ? " newly-revealed" : ""}" data-skill-id="${skill.id}" data-type="${skill.type}">
-      <div class="skill-col-name">
-        <span class="skill-name">${escapeHtml(skill.name)}</span>
-        ${skill.nameAlt ? `<span class="skill-name-alt">${escapeHtml(skill.nameAlt)}</span>` : ""}
-        ${apHTML}
+    <div class="${rowClasses.join(" ")}" data-skill-id="${skill.id}" data-type="${skill.type}">
+      <div class="skill-col-name" style="display:flex; align-items:flex-start; gap:8px;">
+        ${isSpoiled ? `<input type="checkbox" class="spoil-checkbox" aria-label="Marquer comme obtenue" title="Obtenir">` : `<span style="color:var(--kh-gold); margin-top:2px; font-size:1.1em;" title="Obtenue">✔️</span>`}
+        <div>
+          <span class="skill-name">${escapeHtml(skill.name)}</span>
+          ${skill.nameAlt ? `<span class="skill-name-alt">${escapeHtml(skill.nameAlt)}</span>` : ""}
+          ${apHTML}
+        </div>
       </div>
       <div class="skill-col-desc">
         <span class="skill-description">${escapeHtml(skill.description)}</span>
@@ -199,6 +221,8 @@ function renderGameGroup(game, skills, newlyRevealedId = null) {
  */
 function filterSkills(skills) {
   return skills.filter(skill => {
+    // Filtre par jeu
+    if (App.listGameFilter !== "all" && skill.game !== App.listGameFilter) return false;
     // Filtre par type
     if (App.activeTypeFilter !== "all" && skill.type !== App.activeTypeFilter) return false;
     // Filtre par recherche
@@ -220,29 +244,27 @@ function renderSkillsList(newlyRevealedId = null) {
   const container = document.getElementById("skillsContainer");
   const countBadge = document.getElementById("skillsCount");
 
-  if (App.unlockedSkills.size === 0) {
-    container.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-icon">🗝️</div>
-        <p>Aucune compétence débloquée.<br>
-        Saisissez le <strong>nom d'une compétence</strong> et sélectionnez le <strong>jeu correspondant</strong> pour la révéler.</p>
-      </div>`;
-    countBadge.textContent = "0 débloquée";
-    return;
-  }
-
-  // Récupérer les skills débloqués et filtrer
-  const unlockedSkillObjects = SKILLS.filter(s => App.unlockedSkills.has(s.id));
-  const filteredSkills = filterSkills(unlockedSkillObjects);
+  // Récupérer les skills (débloqués, ou tous si showSpoils est activé)
+  const sourceSkills = App.showSpoils ? SKILLS : SKILLS.filter(s => App.unlockedSkills.has(s.id));
+  const filteredSkills = filterSkills(sourceSkills);
 
   countBadge.textContent = `${App.unlockedSkills.size} débloquée${App.unlockedSkills.size > 1 ? "s" : ""}`;
 
   if (filteredSkills.length === 0) {
-    container.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-icon">🔍</div>
-        <p>Aucune compétence ne correspond aux filtres actifs.</p>
-      </div>`;
+    if (App.unlockedSkills.size === 0 && !App.showSpoils) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">🗝️</div>
+          <p>Aucune compétence débloquée.<br>
+          Saisissez le <strong>nom d'une compétence</strong> et sélectionnez le <strong>jeu correspondant</strong> pour la révéler.</p>
+        </div>`;
+    } else {
+      container.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">🔍</div>
+          <p>Aucune compétence ne correspond aux filtres actifs.</p>
+        </div>`;
+    }
     return;
   }
 
@@ -259,6 +281,9 @@ function renderSkillsList(newlyRevealedId = null) {
 
   // Réattacher les listeners sur les headers
   attachGroupListeners();
+  
+  // Initialiser les GIFs (pause/play au survol/clic)
+  initGifs(container);
 }
 
 /**
@@ -449,14 +474,13 @@ document.addEventListener("DOMContentLoaded", () => {
       skillInput.value = "";
       hideSuggestions();
       renderSkillsList(result.skill.id);
-      // Scroll vers le groupe
+      // Scroll vers la ligne de la nouvelle compétence
       setTimeout(() => {
-        const groupEl = document.querySelector(`.game-group[data-game-id="${result.skill.game}"]`);
-        if (groupEl) {
-          groupEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        const rowEl = document.querySelector(`.skill-row[data-skill-id="${result.skill.id}"]`);
+        if (rowEl) {
+          rowEl.scrollIntoView({ behavior: "smooth", block: "center" });
           // Flash de la ligne
-          const rowEl = document.querySelector(`.skill-row[data-skill-id="${result.skill.id}"]`);
-          if (rowEl) rowEl.classList.add("flash-valid");
+          rowEl.classList.add("flash-valid");
         }
       }, 100);
     } else if (result.alreadyUnlocked) {
@@ -514,6 +538,25 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* ── Filtres ─────────────── */
+  const listGameFilter = document.getElementById("listGameFilter");
+  const spoilToggle    = document.getElementById("spoilToggle");
+
+  listGameFilter.addEventListener("change", () => {
+    App.listGameFilter = listGameFilter.value;
+    renderSkillsList();
+  });
+
+  spoilToggle.addEventListener("change", (e) => {
+    if (e.target.checked && App.listGameFilter === "all") {
+      if (!confirm("Attention, afficher les non-obtenues sans filtrer par jeu va révéler TOUTES les compétences existantes. Voulez-vous vraiment continuer ?")) {
+        e.target.checked = false;
+        return;
+      }
+    }
+    App.showSpoils = e.target.checked;
+    renderSkillsList();
+  });
+
   typeFilter.addEventListener("change", () => {
     App.activeTypeFilter = typeFilter.value;
     renderSkillsList();
@@ -522,6 +565,28 @@ document.addEventListener("DOMContentLoaded", () => {
   searchSkills.addEventListener("input", () => {
     App.searchQuery = searchSkills.value;
     renderSkillsList();
+  });
+
+  // Event delegation pour cocher un spoil
+  document.getElementById("skillsContainer").addEventListener("change", (e) => {
+    if (e.target.classList.contains("spoil-checkbox") && e.target.checked) {
+      const row = e.target.closest(".skill-row");
+      const skillId = row.dataset.skillId;
+      if (skillId) {
+        App.unlockedSkills.add(skillId);
+        saveUnlocked();
+        App.openGroups[SKILLS.find(s => s.id === skillId)?.game] = true;
+        renderSkillsList(skillId);
+        
+        setTimeout(() => {
+          const newRow = document.querySelector(`.skill-row[data-skill-id="${skillId}"]`);
+          if (newRow) {
+            newRow.classList.add("flash-valid");
+            newRow.scrollIntoView({ behavior: "smooth", block: "center" });
+          }
+        }, 100);
+      }
+    }
   });
 
   /* ── Reset ───────────────── */
@@ -550,4 +615,85 @@ function showFeedback(message, type) {
   const feedbackEl = document.getElementById("unlockFeedback");
   feedbackEl.textContent = message;
   feedbackEl.className = `unlock-feedback ${type}`;
+}
+
+/* ── Gestion des GIFs ────────────────────────────────────────── */
+function updateGifState(img, newState) {
+  img.dataset.gifState = newState;
+  const wrapper = img.closest('.gif-wrapper');
+
+  if (newState === 'playing-hover' || newState === 'locked-playing') {
+    if (wrapper) wrapper.classList.add('playing');
+    if (img.dataset.gif && img.src !== img.dataset.gif) {
+      img.src = img.dataset.gif;
+    }
+  } else {
+    if (wrapper) wrapper.classList.remove('playing');
+    // idle or locked-paused
+    if (img.dataset.static && img.src !== img.dataset.static) {
+      img.src = img.dataset.static;
+    }
+  }
+}
+
+function initGifs(container) {
+  const images = container.querySelectorAll('img.skill-media-img');
+  images.forEach(img => {
+    if (img.dataset.gifInit) return;
+    img.dataset.gifInit = "true";
+    img.dataset.gifState = "idle";
+    
+    // Mémoriser la source originale (le GIF animé)
+    img.dataset.gif = img.src;
+    img.style.cursor = 'pointer';
+
+    const captureFrame = () => {
+      if (!img.dataset.static && img.naturalWidth > 0) {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+        img.dataset.static = canvas.toDataURL();
+        
+        if (img.dataset.gifState === 'idle' || img.dataset.gifState === 'locked-paused') {
+          img.src = img.dataset.static;
+        }
+      }
+    };
+
+    if (img.complete) {
+      captureFrame();
+    } else {
+      img.addEventListener('load', () => {
+        // On capture la frame seulement quand la source est bien le GIF original
+        if (img.src === img.dataset.gif) {
+          captureFrame();
+        }
+      });
+    }
+
+    img.addEventListener('mouseenter', () => {
+      if (img.dataset.gifState === 'idle') {
+        updateGifState(img, 'playing-hover');
+      }
+    });
+
+    img.addEventListener('mouseleave', () => {
+      if (img.dataset.gifState === 'playing-hover') {
+        updateGifState(img, 'idle');
+      }
+    });
+
+    img.addEventListener('click', () => {
+      const state = img.dataset.gifState;
+      // Si on était juste en train de survoler, un clic verrouille la lecture.
+      // Si c'était déjà verrouillé en lecture, on met en pause.
+      if (state === 'locked-playing') {
+        updateGifState(img, 'locked-paused');
+      } else {
+        updateGifState(img, 'locked-playing');
+      }
+    });
+  });
 }
